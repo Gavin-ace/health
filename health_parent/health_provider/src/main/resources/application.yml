@@ -1,0 +1,24 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.119.128:3306/health?characterEncoding=UTF-8
+    username: root
+    password: 1111
+    type: com.alibaba.druid.pool.DruidDataSource
+  redis:
+    host: 192.168.119.130
+    port: 6379
+    jedis:
+      pool:
+        max-idle: 6    #最大空闲数
+        max-active: 10 #最大连接数
+        min-idle: 2    #最小空闲数
+dubbo:
+  registry:
+    address: zookeeper://192.168.119.129:2181  #zookeeper地址
+  application:
+    name: health-provider
+  protocol:
+    name: dubbo

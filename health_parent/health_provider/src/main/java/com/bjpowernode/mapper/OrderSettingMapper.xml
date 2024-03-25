@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bjpowernode.mapper.OrderSettingMapper">
+
+    <select id="getOrderSettingCountByOrderDate" parameterType="date" resultType="long">
+          select count(1) from t_ordersetting where orderDate = DATE_FORMAT(#{orderDate},'%Y-%m-%d')
+    </select>
+
+    <update id="updateOrderSettingByOrderDate" parameterType="com.bjpowernode.pojo.OrderSetting">
+          update t_ordersetting
+          <set>
+              <if test="number!=0">
+                  number=#{number},
+              </if>
+              <if test="reservations!=0">
+                  reservations=#{reservations},
+              </if>
+          </set>
+          where orderDate = DATE_FORMAT(#{orderDate},'%Y-%m-%d')
+    </update>
+
+    <insert id="addOrderSettingByOrderDate" parameterType="com.bjpowernode.pojo.OrderSetting">
+          insert into t_ordersetting
+          (orderDate,number,reservations)
+          values
+          (#{orderDate},#{number},#{reservations})
+    </insert>
+
+    <select id="getOrderSettingByMonth" resultType="com.bjpowernode.pojo.OrderSetting">
+        select * from t_ordersetting where orderDate&gt;=#{beginTime} and orderDate&lt;=#{endTime}
+    </select>
+
+    <select id="getOrderSettingByOrderDate" parameterType="date" resultType="com.bjpowernode.pojo.OrderSetting">
+          select * from t_ordersetting where orderDate = DATE_FORMAT(#{orderDate},'%Y-%m-%d')
+    </select>
+</mapper>

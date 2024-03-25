@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bjpowernode.mapper.SetmealMapper">
+    <insert id="addSetmeal" parameterType="com.bjpowernode.pojo.Setmeal">
+        <!--通过mybatis框架提供的selectKey标签获得自增产生的ID值-->
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into t_setmeal(code,name,sex,helpCode,remark,attention,age,price,img)
+          values
+        (#{code},#{name},#{sex},#{helpCode},#{remark},#{attention},#{age},#{price},#{img})
+    </insert>
+
+    <insert id="addSetmealCheckGroup">
+        insert into t_setmeal_checkgroup(setmeal_id,checkgroup_id)
+        values
+        (#{setmealId},#{checkgroupId})
+    </insert>
+
+    <select id="findPage" parameterType="com.bjpowernode.entity.QueryPageBean" resultType="com.bjpowernode.pojo.Setmeal">
+        select * from t_setmeal
+        <where>
+            <if test="queryString!=null and queryString!=''">
+                code=#{queryString} or name=#{queryString} or helpCode=#{queryString}
+            </if>
+        </where>
+        ORDER by id desc
+    </select>
+
+    <select id="getAllSetmeal" resultType="com.bjpowernode.pojo.Setmeal">
+        select * from t_setmeal
+    </select>
+
+    <resultMap id="findByIdResultMap" type="com.bjpowernode.pojo.Setmeal">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="code" property="code"></result>
+        <result column="helpCode" property="helpCode"></result>
+        <result column="sex" property="sex"></result>
+        <result column="age" property="age"></result>
+        <result column="price" property="price"></result>
+        <result column="remark" property="remark"></result>
+        <result column="attention" property="attention"></result>
+        <result column="img" property="img"></result>
+        <!--
+            property="checkGroups" ：属性名
+            ofType="checkGroups"：集合的泛型
+            select="com.bjpowernode.mapper.CheckGroupMapper.selectCheckGroupBySetmealId"：调用的sql
+            column="id"：参数
+        -->
+        <collection property="checkGroups" ofType="com.bjpowernode.pojo.CheckGroup"
+                    select="com.bjpowernode.mapper.CheckGroupMapper.selectCheckGroupBySetmealId"
+                    column="id"></collection>
+    </resultMap>
+
+    <select id="findById" parameterType="int" resultMap="findByIdResultMap">
+        select * from t_setmeal where id=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bjpowernode.mapper.CheckGroupMapper">
+    <!--添加检查组-->
+    <insert id="addCheckGroup" parameterType="com.bjpowernode.pojo.CheckGroup">
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into t_checkgroup(code,name,sex,helpCode,remark,attention)
+        values
+        (#{code},#{name},#{sex},#{helpCode},#{remark},#{attention})
+    </insert>
+
+    <insert id="addCheckGroupCheckItem">
+        insert into t_checkgroup_checkitem(checkgroup_id,checkitem_id)
+        values
+        (#{checkGroupId},#{checkItemId})
+    </insert>
+
+    <select id="findPage" parameterType="com.bjpowernode.entity.QueryPageBean" resultType="com.bjpowernode.pojo.CheckGroup">
+        select * from t_checkgroup
+        <where>
+            <if test="queryString!=null and queryString!=''">
+                code=#{queryString} or name=#{queryString} or helpCode=#{queryString}
+            </if>
+        </where>
+        ORDER by id desc
+    </select>
+
+    <select id="findById" parameterType="int" resultType="com.bjpowernode.pojo.CheckGroup">
+        select * from t_checkgroup where id=#{id}
+    </select>
+
+    <select id="findCheckItemIdsByCheckGroupId" parameterType="int" resultType="int">
+        select checkitem_id from t_checkgroup_checkitem where checkgroup_id=#{checkgroup_id}
+    </select>
+
+    <update id="edit" parameterType="com.bjpowernode.pojo.CheckGroup">
+        update t_checkgroup
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="helpCode != null">
+                helpCode = #{helpCode},
+            </if>
+            <if test="attention != null">
+                attention = #{attention},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCheckGroupCheckItemByCheckGroupId" parameterType="int">
+        delete from t_checkgroup_checkitem where checkgroup_id = #{id}
+    </delete>
+
+    <select id="findAll" resultType="com.bjpowernode.pojo.CheckGroup">
+        select id,code,name,remark from t_checkgroup
+    </select>
+
+    <resultMap id="selectCheckGroupBySetmealIdResultMap" type="com.bjpowernode.pojo.CheckGroup">
+        <id column="id" property="id"></id>
+        <result column="code" property="code"></result>
+        <result column="name" property="name"></result>
+        <result column="helpCode" property="helpCode"></result>
+        <result column="sex" property="sex"></result>
+        <result column="remark" property="remark"></result>
+        <result column="attention" property="attention"></result>
+        <collection property="checkItems" ofType="com.bjpowernode.pojo.CheckItem"
+                    select="com.bjpowernode.mapper.CheckItemMapper.selectCheckItemByCheckGroupId"
+                    column="id"></collection>
+    </resultMap>
+
+    <select id="selectCheckGroupBySetmealId" parameterType="int" resultMap="selectCheckGroupBySetmealIdResultMap">
+        select * from t_checkgroup where id in(
+            select checkgroup_id from t_setmeal_checkgroup where setmeal_id=#{setmeal_id}
+        )
+    </select>
+</mapper>

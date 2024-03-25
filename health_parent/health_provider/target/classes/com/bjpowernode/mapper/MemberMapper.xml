@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bjpowernode.mapper.MemberMapper">
+
+    <select id="getMemberByTelephone" parameterType="string" resultType="com.bjpowernode.pojo.Member">
+          select * from t_member where phoneNumber=#{phoneNumber}
+    </select>
+
+    <insert id="addMember" parameterType="com.bjpowernode.pojo.Member">
+        <selectKey resultType="java.lang.Integer" order="AFTER"
+                   keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_member(fileNumber,name,sex,idCard,phoneNumber,
+        regTime,password,email,birthday,remark)
+        values(#{fileNumber},#{name},#{sex},#{idCard},#{phoneNumber},
+        #{regTime},#{password},#{email},#{birthday},#{remark})
+    </insert>
+
+    <select id="getCountByMonth" parameterType="string" resultType="long">
+        select count(1) from t_member where DATE_FORMAT(regTime,'%Y-%m')&lt;=#{month}
+    </select>
+</mapper>
